@@ -28,13 +28,10 @@ export default function Home() {
   const [allData, setAllData] = useState([]);
 
   const fetchAllData = async () => {
-    const response = await fetch("/api/getAllData");
+    const response = await fetch("/api/menu");
 
     if (response.ok) {
-        console.log('hello')
         const data = await response.json();
-        console.log('olka')
-        console.log(data)
         setAllData(data);
     } else {
         alert("Failed to fetch data!");
@@ -66,7 +63,7 @@ export default function Home() {
       <Component ></Component>
       <button onClick={fetchAllData}>get</button>
       <button onClick={handleSaveData}>post</button>
-      <string>{JSON.stringify(allData)}</string>
+      <p>{JSON.stringify(allData)}</p>
       <ImgUploader ></ImgUploader>
     </div>
   );

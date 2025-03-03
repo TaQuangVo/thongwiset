@@ -1,13 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown, TableOfContents } from "lucide-react"
+import { TableOfContents } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -21,14 +20,14 @@ import {
 import { Input } from "./ui/input"
 
 
-export default function InputWithSugestion({value, onInputChange, avalableCategories, name, id}) {
+export default function InputWithSugestion({ disabled, value, onInputChange, avalableCategories, name, id}) {
   const [open, setOpen] = React.useState(false)
   const [selectedStatus, setSelectedStatus] = React.useState(value ? value : '')
   const inputRef = React.useRef(null)
 
   function _onInputChange(e){
     setSelectedStatus(e.target.value)
-    onInputChange(e)
+    onInputChange(e.target.value)
   }
 
   function _onSugestionSelected(value){
@@ -36,6 +35,7 @@ export default function InputWithSugestion({value, onInputChange, avalableCatego
       avalableCategories.find((category) => category === value) ||
         ''
     )
+    onInputChange(value)
     setOpen(false)
   }
 
@@ -45,10 +45,10 @@ export default function InputWithSugestion({value, onInputChange, avalableCatego
 
   return (
     <div className="flex items-center space-x-4 w-full mb-5 mt-1">
-      <Input required id={id} ref={inputRef} placeholder="" name={name}  value={selectedStatus} onChange={_onInputChange} className="flex-grow flex"/>
-      <Popover open={open} modal={true} onOpenChange={onOpenChange} align='end'>
+      <Input disabled={disabled} required id={id} ref={inputRef} placeholder="" name={name}  value={selectedStatus} onChange={_onInputChange} className="flex-grow flex"/>
+      <Popover open={open} modal={true} onOpenChange={onOpenChange} align='end' disabled={disabled}>
         <PopoverTrigger asChild>
-          <Button variant="outline">
+          <Button variant="outline" disabled={disabled}>
             <TableOfContents></TableOfContents>
           </Button>
         </PopoverTrigger>

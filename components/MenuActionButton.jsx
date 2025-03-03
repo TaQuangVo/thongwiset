@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Button } from "@/components/ui/roundButton"
+import SignOutButton from "@/components/SignOutButtom"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,6 +23,7 @@ import BagIcon from "./BagIcon"
 import UberIcon from "./UberIcon"
 import NavigationHouse from "./NavigationHouse"
 import StoreIcon from "./StoreIcon"
+import { ExternalLink, House, PhoneCall } from 'lucide-react'
   
 
 
@@ -39,18 +41,24 @@ export default function MenuActionButton(){
                         Hej och välkomna!
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        <FoodBowlIcon />
-                        <Link href='/menu'>
-                            À la carte
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <CarrotIcon />
-                        <Link href='/menu/today'>
-                            Veckans lunch
-                        </Link>
-                    </DropdownMenuItem>
+                    <Link href='/home'>
+                        <DropdownMenuItem>
+                            <House/>
+                                Start
+                            </DropdownMenuItem>
+                    </Link>
+                    <Link href='/menu'>
+                        <DropdownMenuItem>
+                            <FoodBowlIcon />
+                                À la carte
+                            </DropdownMenuItem>
+                    </Link>
+                    <Link href='/menu/today'>
+                        <DropdownMenuItem>
+                            <CarrotIcon />
+                                Veckans lunch
+                        </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
                             <InfoCloudIcon />
@@ -58,18 +66,24 @@ export default function MenuActionButton(){
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                             <DropdownMenuSubContent>
-                                <DropdownMenuItem>
-                                    <NavigationHouse />
-                                    <span>Address</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                   <ClockIcon />
-                                    <span>Öppettider</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <StoreIcon />
-                                    <span>Om oss</span>
-                                </DropdownMenuItem>
+                                <Link href='/home/adress'>
+                                    <DropdownMenuItem>
+                                        <NavigationHouse />
+                                        <span>Adress</span>
+                                    </DropdownMenuItem>
+                                </Link>
+                                <Link href='/home/openhours'>
+                                    <DropdownMenuItem>
+                                        <ClockIcon />
+                                        <span>Öppettider</span>
+                                    </DropdownMenuItem>
+                                </Link>
+                                <Link href='/home/contact'>
+                                    <DropdownMenuItem>
+                                    <PhoneCall />
+                                        <span>Contact</span>
+                                    </DropdownMenuItem>
+                                </Link>
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
@@ -80,18 +94,33 @@ export default function MenuActionButton(){
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                             <DropdownMenuSubContent>
-                                <DropdownMenuItem>
-                                   <BagIcon />
-                                    <span>Avhämtning</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                   <UberIcon />
-                                    <span>Uber Eat</span>
-                                </DropdownMenuItem>
+                                <Link href='https://qopla.com/restaurant/thongwiset/q28W1aqoB3/order'>
+                                    <DropdownMenuItem>
+                                        <BagIcon />
+                                        <span className='flex items-center'>
+                                            Avhämtning 
+                                            <ExternalLink size={12} className="ml-1"/>
+                                        </span>
+                                    </DropdownMenuItem>
+                                </Link>
+                                <Link href='https://www.ubereats.com/se-en/store/thongwiset-thai/i58g_zymRZCkJ3GKje1TlA'>
+                                    <DropdownMenuItem>
+                                        <UberIcon />
+                                        <span className='flex items-center'>
+                                            Uber Eat
+                                            <ExternalLink size={12} className="ml-1"/>
+                                        </span>
+                                    </DropdownMenuItem>
+                                </Link>
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
-
+                    <SignOutButton>
+                        <DropdownMenuItem>
+                            <CarrotIcon />
+                            Log ut
+                        </DropdownMenuItem>
+                    </SignOutButton>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

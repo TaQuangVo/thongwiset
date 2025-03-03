@@ -10,11 +10,11 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 
-import AddMenuSectionButton from '@/components/AddMenuSectionButton'
+import MenuEditorButton from '@/components/AddMenuSectionButton'
+import EditLunchMenu from '@/components/EditLunchMenu'
 import TripadvisorIcon from '@/components/TripadvisorIcon'
-import { Clock, Copyright, MapPinHouseIcon, Phone } from "lucide-react";
-import  DatePicker from "@/components/DatePicker"
-import  InputWithSugestion from "@/components/InputWithSugestion"
+import { Clock, Copyright, MapPinHouseIcon, Phone, Undo2 } from "lucide-react";
+import MenuActionButton from "./MenuActionButton"
 
 
 const dancingScript = Dancing_Script({
@@ -29,28 +29,25 @@ const comfortaa = Comfortaa({
 
 
 
-function MenuItem({dishData, showTodayLunchIndicator}){
+//menuData: the how menus with multiple sections, in each section is all the dishes in that section. it also contain some varialbe for the ui
+//allDishes: all the avalable dishes in an array
+//isLunchMenu: if the menuData is main menu or lunch menu
+//dishData: the data of one single dish,(the dish one of the dish in all dishes)
+function MenuItem({dishData, menuData, allDishes, isLunchMenu}){
     const title = dishData.title
     const ingredients = dishData.ingredients
     const note = dishData.note
     const currentPrice = (dishData.discountedPrice && dishData.discountedPrice != '') ? dishData.discountedPrice : dishData.price
     const prevPrice = !(dishData.discountedPrice && dishData.discountedPrice != '') ? dishData.discountedPrice : dishData.price
     const priceDescription = dishData.priceDescription
-    const hideFromMenu = dishData.hideFromMenu
+    const hideFromMenu = false
     const imageUrl = dishData.imageUrl
 
-    const inLunchMenu = dishData.inLunchMenu
-    const lunchMenuDate = dishData.lunchMenuDate
+    const classNameWithBorder = "relative m-2 border border-[#FACE8D] py-4 mt-6 rounded-2xl cursor-pointer hover:bg-neutral-900 2xl:m-5 2xl:py-5 text-left"
+    const classNameWithoutBorder = "relative m-2 py-4 rounded-2xl cursor-pointer hover:bg-neutral-900  2xl:m-5  2xl:py-5 text-left"
+    
+    const showIndicator = dishData.inLunchMenu && dishData.isInTodayLunchMenu
 
-    const today = new Date();
-    const swedishDayOfWeek = today.toLocaleDateString('sv-SE', { weekday: 'long' });
-    const capitalizedDay = swedishDayOfWeek.charAt(0).toUpperCase() + swedishDayOfWeek.slice(1);
-
-
-    const showLuchMenuIndicator = (inLunchMenu && showTodayLunchIndicator) && (lunchMenuDate == capitalizedDay)
-
-    const classNameWithBorder = "relative m-2 border border-[#FACE8D] py-4 mt-6 rounded-2xl cursor-pointer hover:bg-neutral-900 2xl:m-5 2xl:py-5"
-    const classNameWithoutBorder = "relative m-2 py-4 rounded-2xl cursor-pointer hover:bg-neutral-900  2xl:m-5  2xl:py-5"
 
     if(hideFromMenu)
         return <></>
@@ -60,9 +57,9 @@ function MenuItem({dishData, showTodayLunchIndicator}){
         <Dialog>
             <DialogTrigger asChild>
 
-            <div className={showLuchMenuIndicator ? classNameWithBorder : classNameWithoutBorder}>
+            <div className={showIndicator ? classNameWithBorder : classNameWithoutBorder}>
                 {
-                    showLuchMenuIndicator && (
+                    showIndicator && (
                         <div className="absolute top-0 right-0 ">
                             <p className={comfortaa.className + " py-1 px-2 bg-[#FACE8D] rounded -translate-y-1/2 -translate-x-1/4 text-xs 2xl:text-base 2xl:px-4"}>Dagens lunch</p>
                         </div>
@@ -89,7 +86,9 @@ function MenuItem({dishData, showTodayLunchIndicator}){
                     </div>
                     <div className="text-white flex-grow pl-4 overflow-hidden">
                         <div className=" flex justify-between content-between text-lg mb-2">
-                            <h3 className={comfortaa.className + ' text-sm scale-110 origin-left md:text-base md:scale-125'}>{title}</h3>
+                            <span className={comfortaa.className + ' text-sm scale-110 origin-left md:text-base md:scale-125'}>
+                                {title}
+                            </span>
                             <div className="flex">
                                 <p className={comfortaa.className + ' opacity-40 line-through mr-2 text-sm md:text-base'}>{prevPrice}</p>
                                 <p className={comfortaa.className + ' text-sm md:text-base'}>{currentPrice}</p>
@@ -104,9 +103,13 @@ function MenuItem({dishData, showTodayLunchIndicator}){
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                <DialogTitle><span className={comfortaa.className + " text-2xl"}>{title}</span></DialogTitle>
+                <DialogTitle>
+                    <span className={comfortaa.className + " text-2xl flex"}>
+                        {title}                                 
+                    </span>
+                </DialogTitle>
                 <DialogDescription>
-                    <span className={comfortaa.className + " mt-5 block"}><span className={comfortaa.className + " font-bold text-black"}>Price:</span> <span  className={comfortaa.className + " line-through opacity-50"}>{prevPrice}</span> {currentPrice}</span>
+                    <span className={comfortaa.className + " mt-5 block"}><span className={comfortaa.className + " font-bold text-black"}>Pris:</span> <span  className={comfortaa.className + " line-through opacity-50"}>{prevPrice}</span> {currentPrice}</span>
 
                     <span className={comfortaa.className + " mt-3 block"}><span className={comfortaa.className + " font-bold text-black"}>Ingrediens:</span> {ingredients}</span>
 
@@ -121,16 +124,37 @@ function MenuItem({dishData, showTodayLunchIndicator}){
                             <span className={comfortaa.className + " mt-3 block"}><span  className={comfortaa.className + " font-bold text-black"}>Chef note:</span> {note}</span>
                         )
                     }
+
+                    <span className="flex justify-end mt-4">
+                        <span className="mr-5">
+                        {
+                            isLunchMenu ? 
+                            <EditLunchMenu luncheItem={{lunchMenuId: dishData.lunchMenuId , date: dishData.lunchMenuDate,  dishId:dishData.id}} operation='DELETE' menuItems={allDishes} /> 
+                            :
+                            <MenuEditorButton menuItem={dishData} operation='DELETE' avalableCategories={menuData.sections.map(section => section.title)}/> 
+                        }
+
+                        </span>
+                        {
+                            isLunchMenu ? 
+                            <EditLunchMenu luncheItem={{lunchMenuId: dishData.lunchMenuId , date: dishData.lunchMenuDate,  dishId:dishData.id}} operation='PATCH' menuItems={allDishes} /> 
+                            :
+                            <MenuEditorButton menuItem={dishData} operation='PATCH' avalableCategories={menuData.sections.map(section => section.title)}/> 
+                        }
+                    </span>
                 </DialogDescription>
                 </DialogHeader>
             </DialogContent>
         </Dialog>
-        
     )
 }
 
 
-function MenuSection({sectionData, showTodayLunchIndicator}){
+//menuData: the how menus with multiple sections, in each section is all the dishes in that section. it also contain some varialbe for the ui
+//allDishes: all the avalable dishes in an array
+//isLunchMenu: if the menuData is main menu or lunch menu
+//sectionData: contain one single section with title and an array of dishes in that section.(one section from the menuData.sections)
+function MenuSection({sectionData, menuData, allDishes, isLunchMenu}){
     const sectionTitle = sectionData.title
     const dishesData = sectionData.dishes
 
@@ -140,7 +164,7 @@ function MenuSection({sectionData, showTodayLunchIndicator}){
                 <h2 className={dancingScript.className + ' text-[#FACE8D] text-3xl mb-4 ml-6 2xl:ml-11'}>{sectionTitle}</h2>
                 <div>
                     {
-                        dishesData.map(dishData => <MenuItem dishData={dishData} key={dishData.id} showTodayLunchIndicator={showTodayLunchIndicator}/>)
+                        dishesData.map(dishData => <MenuItem isLunchMenu={isLunchMenu} allDishes={allDishes} menuData={menuData} dishData={dishData} key={dishData.lunchMenuId ? dishData.lunchMenuId : dishData.id}/>)
                     }
                 </div>
             </section>
@@ -148,20 +172,30 @@ function MenuSection({sectionData, showTodayLunchIndicator}){
     )
 }
 
-export default function MenuComponent({menuData}) {
+//menuData: the how menus with multiple sections, in each section is all the dishes in that section. it also contain some varialbe for the ui
+//allDishes: all the avalable dishes in an array
+//isLunchMenu: if the menuData is main menu or lunch menu
+export default function MenuComponent({menuData, allDishes, isLunchMenu}) { 
     const menuSections = menuData.sections
     return (
         <div className="w-screen bg-[#050505] flex flex-col 2xl:flex-row">
-            <div className="h-[40lvh] overflow-hidden sticky top-0 left-0 2xl:h-screen 2xl:w-1/2">
+            <div className="h-[40lvh] overflow-hidden sticky top-0 left-0 2xl:h-screen 2xl:w-1/2 z-0">
                 <div className="w-full h-full bg-black opacity-20 absolute z-40"></div>
+
                 <div className="relative w-full h-full z-50 flex justify-center items-center">
                     <div>
                         <h1 className={dancingScript.className + ' text-[#FACE8D] text-center text-4xl md:text-5xl'}>{menuData.menuTopText}</h1>
                         <h2 className={comfortaa.className + ' text-white text-center text-5xl md:text-6xl'}>{menuData.menuTitle}</h2>
                     </div>
                 </div>
-                <div className="w-full absolute top-0 left-0 z-50 p-2 md:p-5">
-                    <Link href="/home"><p className={comfortaa.className + ' text-white text-lg text-center md:text-xl'}>Thongwiset.</p></Link>
+                <div className="w-full absolute top-0 left-0 z-50 p-2 md:p-5 flex justify-between">
+                    <Link href='/home'>
+                        <Undo2 color="#ffffff" />
+                    </Link>
+                    <Link href="/home" className="absolute top-0 left-1/2 -translate-x-1/2 p-3 md:p-5 ">
+                        <p className={comfortaa.className + ' text-white text-lg text-center md:text-xl'}>Thongwiset.</p>
+                    </Link>
+                    <div></div>
                 </div>
                 <div className="w-full min-h-full h-auto absolute bottom-0 left-0">
                     <Image 
@@ -172,9 +206,12 @@ export default function MenuComponent({menuData}) {
                         style={{objectFit: "cover", minHeight:"100lvh", minWidth: "100%"}}
                         />
                 </div>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-50 hidden md:block">
+                    <MenuActionButton></MenuActionButton>
+                </div>
             </div>
 
-            <div className="h-2/3 overflow-scroll relative bg-black 2xl:h-screen noScrollBar">
+            <div className="h-2/3 overflow-scroll relative bg-black 2xl:h-screen noScrollBar z-10 flex-grow">
                 <div className="overflow-hidden sticky top-0 right-0 bg-black z-50">
                     <div className="flex justify-center py-6 max-w-4xl m-auto">
                     {
@@ -185,9 +222,16 @@ export default function MenuComponent({menuData}) {
                     </div>
                 </div>
                 {
-                    menuSections.map(sectionData => <MenuSection sectionData={sectionData} key={sectionData.id} showTodayLunchIndicator={menuData.showTodayLunchIndicator}/> )
+                    menuSections.map(sectionData => <MenuSection isLunchMenu={isLunchMenu} allDishes={allDishes} menuData={menuData} sectionData={sectionData} key={sectionData.id}/> )
                 }
-                <AddMenuSectionButton menuSections={menuSections} avalableCategories={menuSections.map(section => section.title)}/>
+                <div  className="flex justify-center mb-11">
+                    {
+                        isLunchMenu ? 
+                        <EditLunchMenu operation='POST' menuItems={allDishes} /> 
+                        :
+                        <MenuEditorButton  operation='POST' avalableCategories={menuSections.map(section => section.title)}/>
+                    }
+                </div>
                 <Footer />
             </div>
         </div>
@@ -196,7 +240,7 @@ export default function MenuComponent({menuData}) {
 
 function Footer(){
     return (
-        <div className="mx-6 2xl:mx-11 mb-20 flex flex-col opacity-65 border-t-2 mt-40 text-sm">
+        <div className="mx-6 2xl:mx-11 mb-20 flex flex-col opacity-65 border-t-2 mt-40 text-sm hello">
             <div className="flex justify-end mt-4 items-center">
                 <Link href='https://www.google.com/maps/place/Thongwiset/@59.3170927,18.0467831,17z/data=!3m1!4b1!4m6!3m5!1s0x465f77c2aafc4e9f:0x615b729446ab0e85!8m2!3d59.31709!4d18.049358!16s%2Fg%2F1hc1ykkn5?hl=sv&entry=ttu&g_ep=EgoyMDI1MDIxOS4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D'>
                     <span className="text-white pr-2 underline">Hornsgatan 85, T-Bana Zinkensdamm</span>

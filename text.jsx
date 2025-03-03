@@ -12,17 +12,21 @@ import {
   } from "@/components/ui/dialog"
 
 import {menuDataMock} from '@/constant/dataMock.js'
-import AddMenuSectionButton from '@/components/AddMenuSectionButton'
+import MenuEditorButton from '@/components/AddMenuSectionButton'
 
 
 const dancingScript = Dancing_Script({
     subsets: ["latin"],
-    weights: [400]
+    weights: [400],
+    display: "swap",
+    adjustFontFallback: false,
 })
 
 const comfortaa = Comfortaa({
     subsets: ["latin"],
-    weights: ["800"]
+    weights: ["800"],
+    display: "swap",
+    adjustFontFallback: false,
 })
 
 
@@ -184,7 +188,7 @@ export default function Menu() {
                 {
                     menuSections.map(sectionData => <MenuSection sectionData={sectionData} key={sectionData.id}/> )
                 }
-                <AddMenuSectionButton menuSections={menuSections}/>
+                <MenuEditorButton menuSections={menuSections}/>
             </div>
         </div>
     )

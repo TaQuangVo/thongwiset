@@ -14,13 +14,14 @@ import {
 } from "@/components/ui/popover"
 import { PopoverPortal } from "@radix-ui/react-popover"
 
-export default function DatePicker() {
-  const [date, setDate] = React.useState()
+export default function DatePicker({onSelect, value, disabled}) {
+  const [date, setDate] = React.useState(value)
   const [open, setOpen] = React.useState(false)
 
     // When a date is selected, update state and close the popover.
     const handleSelect = (selectedDate) => {
         setDate(selectedDate)
+        onSelect(selectedDate)
         setTimeout(() => {
             setOpen(false)
         }, "300");
@@ -30,6 +31,7 @@ export default function DatePicker() {
     <Popover modal={true}  open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          disabled={disabled}
           variant={"outline"}
           className={cn(
             "w-[240px] justify-start text-left font-normal",
@@ -47,6 +49,7 @@ export default function DatePicker() {
                 selected={date}
                 onSelect={handleSelect}
                 initialFocus
+                required
             />
     </PopoverContent>
       </PopoverPortal>

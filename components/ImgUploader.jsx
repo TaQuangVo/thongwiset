@@ -101,7 +101,6 @@ export default function ProductForm({dishData}) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    console.log(name, value, type, checked)
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -130,7 +129,6 @@ export default function ProductForm({dishData}) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Submitted Product:', formData);
   };
 
   return (
