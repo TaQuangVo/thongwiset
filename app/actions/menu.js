@@ -2,9 +2,7 @@
 
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { MongoClient } from "mongodb";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from '@/lib/authOption';
-import { calcIsInLunchMenu, isTodayLuchMenu, calcMenuDate, extractLunchMenuData } from '@/lib/menuUtils'
+import { isTodayLuchMenu, calcMenuDate, extractLunchMenuData } from '@/lib/menuUtils'
 
 async function getAllUpcomingLunchMenu() {
     'use cache'

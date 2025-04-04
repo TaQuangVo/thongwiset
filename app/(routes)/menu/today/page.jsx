@@ -1,4 +1,3 @@
-import {menuDataMock} from '@/constant/dataMock.js'
 import MenuComponent from '@/components/MenuComponent'
 import { fetchLunchMenuData,getAllDishes } from './../../../actions/menu'
 
